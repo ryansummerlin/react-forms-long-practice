@@ -1,4 +1,4 @@
-import { useState } from 'react';
+import { useState, useEffect } from 'react';
 
 // ./src/ContactUs.js
 function ContactUs() {
@@ -9,11 +9,45 @@ function ContactUs() {
     const [staffType, setStaffType] = useState('');
     const [bio, setBio] = useState('');
     const [signup, setSignup] = useState(false);
+    const [validationErrors, setValidationErrors] = useState([]);
+    const [hasSubmitted, setHasSubmitted] = useState(false);
+
+    useEffect(() => {
+      const errors = [];
+
+      if (!name.length > 0) {
+        errors.push('Please enter your name');
+      }
+      if (!email.includes('@')) {
+        errors.push('Please provide a valid email');
+      }
+      if (!(phone.toString().length) === 10) {
+        errors.push('Please provide a valid phone number');
+      }
+      if (bio.length > 2) {
+        errors.push('Bio cannot exceed 280 characters');
+      }
+
+      setValidationErrors(errors);
+      setHasSubmitted(false);
+    }, [name, email, phone, bio]);
 
     const onSubmit = e => {
         e.preventDefault();
 
-        const contactUsInformation = {
+        setHasSubmitted(true);
+        if (validationErrors.length > 0) {
+          alert(`Cannot submit`);
+          setName('');
+          setEmail('');
+          setPhone('');
+          setPhoneType('');
+          setStaffType('');
+          setBio('');
+          setSignup(false);
+        } else {
+
+          const contactUsInformation = {
             name,
             email,
             phone,
@@ -24,20 +58,35 @@ function ContactUs() {
             submittedOn: new Date()
         };
 
-        console.log(contactUsInformation);
+            console.log(contactUsInformation);
 
-        setName('');
-        setEmail('');
-        setPhone('');
-        setPhoneType('');
-        setStaffType('');
-        setBio('');
-        setSignup(false);
+            setName('');
+            setEmail('');
+            setPhone('');
+            setPhoneType('');
+            setStaffType('');
+            setBio('');
+            setSignup(false);
+            setValidationErrors([]);
+            setHasSubmitted(false);
+          }
+
+
     };
 
   return (
     <div>
       <h2>Contact Us</h2>
+      {hasSubmitted && validationErrors.length > 0 && (
+          <div>
+            The following errors were found:
+            <ul>
+              {validationErrors.map(error => (
+                <li key={error}>{error}</li>
+              ))}
+            </ul>
+          </div>
+        )}
       <form onSubmit={onSubmit}>
         <div>
           <label htmlFor='name'>Name:</label>
