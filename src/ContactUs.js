@@ -21,16 +21,19 @@ function ContactUs() {
       if (!email.includes('@')) {
         errors.push('Please provide a valid email');
       }
-      if (!(phone.toString().length) === 10) {
+      if (phone && !phoneType.length > 0) {
+        errors.push('Please select a phone type');
+      }
+      if (phone && !((phone.toString().length) === 10)) {
         errors.push('Please provide a valid phone number');
       }
-      if (bio.length > 2) {
+      if (bio.length > 280) {
         errors.push('Bio cannot exceed 280 characters');
       }
 
       setValidationErrors(errors);
       setHasSubmitted(false);
-    }, [name, email, phone, bio]);
+    }, [name, email, phone, phoneType, bio]);
 
     const onSubmit = e => {
         e.preventDefault();
@@ -38,20 +41,18 @@ function ContactUs() {
         setHasSubmitted(true);
         if (validationErrors.length > 0) {
           alert(`Cannot submit`);
-          setName('');
-          setEmail('');
-          setPhone('');
-          setPhoneType('');
-          setStaffType('');
-          setBio('');
-          setSignup(false);
         } else {
+
+          let checkPhoneType = '';
+          if(phone) {
+            checkPhoneType = phoneType;
+          }
 
           const contactUsInformation = {
             name,
             email,
             phone,
-            phoneType,
+            phoneType: checkPhoneType,
             staffType,
             bio,
             signup,
